@@ -1,3 +1,8 @@
+const path = require('path')
+var os = require('os');
+let basedir = __dirname;
+const filename = path.basename(basedir);
+
 //open ffi
 const ffi = require("ffi-napi");
 const ref = require("ref-napi");
@@ -32,7 +37,7 @@ console.log("calldata Message > " + mesResult);
 
 function GetAppRoot(){
   let nextPath = __filename;
-  cutname,_ = GetCurrentName(nextPath)
+  cutname = GetCurrentName(nextPath)
   let logpath = "First " + nextPath + " / " + cutname + os.EOL;
   let appsPathArray = SearchPath("Contents",__filename,logpath)
   const verPath = appsPathArray[0]
