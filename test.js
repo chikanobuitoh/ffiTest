@@ -11,15 +11,16 @@ function filedirPlatform(){
       libname = process.cwd() + "/" + "libTest.dll"
       return libname
     } else if(is_mac){
-      libname = GetAppRoot() + "libTest.so"
+      libname = GetAppRoot() + "libTest.dylib"
       return libname
     } else {
       libname = process.cwd() + "/" + "libTest.so"
       return libname
     }
-  }
-  const result = filedirPlatform();
+  };
 
+const result = filedirPlatform();
+console.log("libPath  > " + result)
 
 var ffilib = ffi.Library(result,{
     "ffiCheck" : [ref.types.CString,["string"]],
