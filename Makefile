@@ -5,7 +5,6 @@ help: ## このMakefileのヘルプを表示します
 
 .PHONY: setup
 setup: ## 初期設定を行います
-	go mod init ffimodule
 	go mod tidy
 	npm install ffi-napi
 
