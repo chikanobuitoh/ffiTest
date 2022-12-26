@@ -60,3 +60,33 @@ function SearchPath(searchStr,nextPath,log){
   }
   return [nextPath,log]
 }
+
+//親の名前を所得するファイルならファイル名、ディレクトリならカレントディレクトr名
+function GetCurrentName(str){
+  let index = str.lastIndexOf(path.sep)
+  if(index <= 3){
+    return ""
+  }
+
+  let cutname = str.slice(index+1)
+  cutname = lastDeleteSep(cutname)
+  if(cutname == ""){
+    index = index -1
+    index = str.lastIndexOf(path.sep,index)
+    cutname = str.slice(index+1)
+    cutname = lastDeleteSep(cutname)
+  }
+
+  return cutname
+}
+
+//文字列の末尾からセパレータを削除する
+function lastDeleteSep(str){
+  //1文字取り出してチェック
+  let check = str.slice(-1)
+  if(check == path.sep){
+    //ラスト一文字削る
+    str = str.slice(0,-1)
+  }
+  return str
+}
