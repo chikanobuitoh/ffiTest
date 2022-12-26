@@ -8,13 +8,13 @@ function filedirPlatform(){
     const is_mac = process.platform==='darwin'
     const pathDat = __filename;
     if(is_windows){
-      libname = "libTest.dll"
+      libname = process.cwd() + "/" + "libTest.dll"
       return libname
     } else if(is_mac){
-      libname = "./libTest.so"
+      libname = GetAppRoot() + "libTest.so"
       return libname
     } else {
-      libname = "libTest.so"
+      libname = process.cwd() + "/" + "libTest.so"
       return libname
     }
   }
