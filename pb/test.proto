@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package grpcsample;
+
+option go_package = "./pb";
+
+service SampleSercive {
+    //giftUpload
+    rpc Check(stream CheckRequest) returns (CheckResponce) {}
+}
+
+message CheckRequest{
+    string request = 1;
+}
+
+message CheckResponce{
+    string result = 1;
+}
