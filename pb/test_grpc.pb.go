@@ -23,7 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SampleSerciveClient interface {
 	// giftUpload
-	Check(ctx context.Context, opts ...grpc.CallOption) (SampleSercive_CheckClient, error)
+	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponce, error)
 }
 
 type sampleSerciveClient struct {
@@ -34,38 +34,13 @@ func NewSampleSerciveClient(cc grpc.ClientConnInterface) SampleSerciveClient {
 	return &sampleSerciveClient{cc}
 }
 
-func (c *sampleSerciveClient) Check(ctx context.Context, opts ...grpc.CallOption) (SampleSercive_CheckClient, error) {
-	stream, err := c.cc.NewStream(ctx, &SampleSercive_ServiceDesc.Streams[0], "/grpcsample.SampleSercive/Check", opts...)
+func (c *sampleSerciveClient) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponce, error) {
+	out := new(CheckResponce)
+	err := c.cc.Invoke(ctx, "/grpcsample.SampleSercive/Check", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &sampleSerciveCheckClient{stream}
-	return x, nil
-}
-
-type SampleSercive_CheckClient interface {
-	Send(*CheckRequest) error
-	CloseAndRecv() (*CheckResponce, error)
-	grpc.ClientStream
-}
-
-type sampleSerciveCheckClient struct {
-	grpc.ClientStream
-}
-
-func (x *sampleSerciveCheckClient) Send(m *CheckRequest) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *sampleSerciveCheckClient) CloseAndRecv() (*CheckResponce, error) {
-	if err := x.ClientStream.CloseSend(); err != nil {
-		return nil, err
-	}
-	m := new(CheckResponce)
-	if err := x.ClientStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
+	return out, nil
 }
 
 // SampleSerciveServer is the server API for SampleSercive service.
@@ -73,7 +48,7 @@ func (x *sampleSerciveCheckClient) CloseAndRecv() (*CheckResponce, error) {
 // for forward compatibility
 type SampleSerciveServer interface {
 	// giftUpload
-	Check(SampleSercive_CheckServer) error
+	Check(context.Context, *CheckRequest) (*CheckResponce, error)
 	mustEmbedUnimplementedSampleSerciveServer()
 }
 
@@ -81,8 +56,8 @@ type SampleSerciveServer interface {
 type UnimplementedSampleSerciveServer struct {
 }
 
-func (UnimplementedSampleSerciveServer) Check(SampleSercive_CheckServer) error {
-	return status.Errorf(codes.Unimplemented, "method Check not implemented")
+func (UnimplementedSampleSerciveServer) Check(context.Context, *CheckRequest) (*CheckResponce, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
 func (UnimplementedSampleSerciveServer) mustEmbedUnimplementedSampleSerciveServer() {}
 
@@ -97,30 +72,22 @@ func RegisterSampleSerciveServer(s grpc.ServiceRegistrar, srv SampleSerciveServe
 	s.RegisterService(&SampleSercive_ServiceDesc, srv)
 }
 
-func _SampleSercive_Check_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(SampleSerciveServer).Check(&sampleSerciveCheckServer{stream})
-}
-
-type SampleSercive_CheckServer interface {
-	SendAndClose(*CheckResponce) error
-	Recv() (*CheckRequest, error)
-	grpc.ServerStream
-}
-
-type sampleSerciveCheckServer struct {
-	grpc.ServerStream
-}
-
-func (x *sampleSerciveCheckServer) SendAndClose(m *CheckResponce) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *sampleSerciveCheckServer) Recv() (*CheckRequest, error) {
-	m := new(CheckRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _SampleSercive_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckRequest)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(SampleSerciveServer).Check(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpcsample.SampleSercive/Check",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SampleSerciveServer).Check(ctx, req.(*CheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 // SampleSercive_ServiceDesc is the grpc.ServiceDesc for SampleSercive service.
@@ -129,13 +96,12 @@ func (x *sampleSerciveCheckServer) Recv() (*CheckRequest, error) {
 var SampleSercive_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "grpcsample.SampleSercive",
 	HandlerType: (*SampleSerciveServer)(nil),
-	Methods:     []grpc.MethodDesc{},
-	Streams: []grpc.StreamDesc{
+	Methods: []grpc.MethodDesc{
 		{
-			StreamName:    "Check",
-			Handler:       _SampleSercive_Check_Handler,
-			ClientStreams: true,
+			MethodName: "Check",
+			Handler:    _SampleSercive_Check_Handler,
 		},
 	},
+	Streams:  []grpc.StreamDesc{},
 	Metadata: "pb/test.proto",
 }

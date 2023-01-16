@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"net"
 	"os"
 
-	"pb"
+	"ffimodule/pb"
 
 	"google.golang.org/grpc"
 	refrection "google.golang.org/grpc/reflection"
@@ -16,7 +16,7 @@ import (
 
 // Port設定
 var (
-	port = flag.Int("port", 80, "The server port")
+	port = flag.Int("port", 50051, "The server port")
 )
 
 type server struct {
@@ -25,11 +25,11 @@ type server struct {
 
 func (s *server) Check(ctx context.Context, in *pb.CheckRequest) (*pb.CheckResponce, error) {
 	return &pb.CheckResponce{
-		Result: "notExist",
+		Result: in.GetRequest(),
 	}, nil
 }
 
-func Service() {
+func main() {
 	flag.Parse()
 	listenPort, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
@@ -44,7 +44,7 @@ func Service() {
 
 	s := grpc.NewServer()
 
-	pb.RegisterGiftPleaseSerciveServer(s, &server{})
+	pb.RegisterSampleSerciveServer(s, &server{})
 	refrection.Register(s)
 	log.Printf("server listening at %v", listenPort.Addr())
 	if err := s.Serve(listenPort); err != nil {

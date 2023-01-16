@@ -2,10 +2,9 @@ package main
 
 import (
 	"C"
+	"ffimodule/pb"
 	"flag"
 	"log"
-
-	"pb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -29,42 +28,18 @@ func ffiCheck(mes *C.char) *C.char {
 		log.Fatalf("did not connect: %v", err)
 	}
 	defer conn.Close()
-	c := pb.NewGreeterClient(conn)
+	c := pb.NewSampleSerciveClient(conn)
 	// Contact the server and print out its response.
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	r, err := c.Check(ctx, &pb.CheckRequest{Result: tex})
+	r, err := c.Check(ctx, &pb.CheckRequest{Request: "gRPC Check"})
 	if err != nil {
 		log.Fatalf("could not greet: %v", err)
 	}
 
-	return C.CString(r)
+	return C.CString(tex + "_" + r.GetResult())
 }
 
 func main() {
-}
-
-type BookDatabase struct{}
-type Book struct {
-	Bookname string "hogehoge"
-}
-
-func NewBookDatabase() *BookDatabase {
-	var db BookDatabase
-	return &db
-}
-
-func (d *BookDatabase) GetBook(id string) *Book {
-	return &Book{Bookname: "okok"}
-}
-
-func (d *BookDatabase) CreateBook(data interface{}) {}
-
-type BookReader interface {
-	GetBook(string) *Book
-}
-
-func fetch(b BookReader, id string) *Book {
-	return b.GetBook(id)
 }
