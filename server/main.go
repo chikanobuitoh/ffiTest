@@ -29,6 +29,18 @@ func (s *server) Check(ctx context.Context, in *pb.CheckRequest) (*pb.CheckRespo
 	}, nil
 }
 
+func (s *server) Checktwo(ctx context.Context, in *pb.CheckRequest) (*pb.CheckResponce, error) {
+	return &pb.CheckResponce{
+		Result: in.GetRequest(),
+	}, nil
+}
+
+func (s *server) Checkthree(ctx context.Context, in *pb.CheckRequest) (*pb.CheckResponce, error) {
+	return &pb.CheckResponce{
+		Result: in.GetRequest(),
+	}, nil
+}
+
 func main() {
 	flag.Parse()
 	listenPort, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))

@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type SampleSerciveClient interface {
 	// giftUpload
 	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponce, error)
+	Checktwo(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponce, error)
+	Checkthree(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponce, error)
 }
 
 type sampleSerciveClient struct {
@@ -43,12 +45,32 @@ func (c *sampleSerciveClient) Check(ctx context.Context, in *CheckRequest, opts 
 	return out, nil
 }
 
+func (c *sampleSerciveClient) Checktwo(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponce, error) {
+	out := new(CheckResponce)
+	err := c.cc.Invoke(ctx, "/grpcsample.SampleSercive/Checktwo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sampleSerciveClient) Checkthree(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponce, error) {
+	out := new(CheckResponce)
+	err := c.cc.Invoke(ctx, "/grpcsample.SampleSercive/Checkthree", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SampleSerciveServer is the server API for SampleSercive service.
 // All implementations must embed UnimplementedSampleSerciveServer
 // for forward compatibility
 type SampleSerciveServer interface {
 	// giftUpload
 	Check(context.Context, *CheckRequest) (*CheckResponce, error)
+	Checktwo(context.Context, *CheckRequest) (*CheckResponce, error)
+	Checkthree(context.Context, *CheckRequest) (*CheckResponce, error)
 	mustEmbedUnimplementedSampleSerciveServer()
 }
 
@@ -58,6 +80,12 @@ type UnimplementedSampleSerciveServer struct {
 
 func (UnimplementedSampleSerciveServer) Check(context.Context, *CheckRequest) (*CheckResponce, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
+}
+func (UnimplementedSampleSerciveServer) Checktwo(context.Context, *CheckRequest) (*CheckResponce, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Checktwo not implemented")
+}
+func (UnimplementedSampleSerciveServer) Checkthree(context.Context, *CheckRequest) (*CheckResponce, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Checkthree not implemented")
 }
 func (UnimplementedSampleSerciveServer) mustEmbedUnimplementedSampleSerciveServer() {}
 
@@ -90,6 +118,42 @@ func _SampleSercive_Check_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SampleSercive_Checktwo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SampleSerciveServer).Checktwo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpcsample.SampleSercive/Checktwo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SampleSerciveServer).Checktwo(ctx, req.(*CheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SampleSercive_Checkthree_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SampleSerciveServer).Checkthree(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/grpcsample.SampleSercive/Checkthree",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SampleSerciveServer).Checkthree(ctx, req.(*CheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SampleSercive_ServiceDesc is the grpc.ServiceDesc for SampleSercive service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -100,6 +164,14 @@ var SampleSercive_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Check",
 			Handler:    _SampleSercive_Check_Handler,
+		},
+		{
+			MethodName: "Checktwo",
+			Handler:    _SampleSercive_Checktwo_Handler,
+		},
+		{
+			MethodName: "Checkthree",
+			Handler:    _SampleSercive_Checkthree_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

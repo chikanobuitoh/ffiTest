@@ -7,6 +7,8 @@ option go_package = "./pb";
 service SampleSercive {
     //giftUpload
     rpc Check(CheckRequest) returns (CheckResponce) {}
+    rpc Checktwo(CheckRequest) returns (CheckResponce) {}
+    rpc Checkthree(CheckRequest) returns (CheckResponce) {}
 }
 
 message CheckRequest{
