@@ -11,6 +11,9 @@ import (
 )
 import (
 	"context"
+	"fmt"
+	"io"
+	"os"
 	"time"
 )
 
@@ -35,10 +38,46 @@ func ffiCheck(mes *C.char) *C.char {
 
 	r, err := c.Check(ctx, &pb.CheckRequest{Request: "gRPC Check"})
 	if err != nil {
-		log.Fatalf("could not greet: %v", err)
+		log.Fatalf("Check Fail: %v", err)
 	}
 
-	return C.CString(tex + "_" + r.GetResult())
+	//Streamで受け取ってファイル化
+	basePath := "sample.png"
+	file, err := os.Create(basePath)
+	if err != nil {
+		fmt.Println(err)
+		return C.CString("cant open file")
+	}
+	defer file.Close()
+
+	var (
+		feedbackDAT *pb.FeedBack
+	)
+
+	replystring := ""
+
+	for {
+		reply, err := r.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return C.CString("could not stream")
+		}
+
+		if reply.Result != "" {
+			replystring = reply.Result
+		}
+
+		if reply.Feedback != nil {
+			feedbackDAT = reply.GetFeedback()
+			file.Write(feedbackDAT.ResponseFile)
+		}
+	}
+
+	file.Close()
+
+	return C.CString(tex + "_" + replystring)
 }
 
 func main() {

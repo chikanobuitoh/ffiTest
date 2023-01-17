@@ -6,9 +6,7 @@ option go_package = "./pb";
 
 service SampleSercive {
     //giftUpload
-    rpc Check(CheckRequest) returns (CheckResponce) {}
-    rpc Checktwo(CheckRequest) returns (CheckResponce) {}
-    rpc Checkthree(CheckRequest) returns (CheckResponce) {}
+    rpc Check(CheckRequest) returns (stream CheckResponce) {}
 }
 
 message CheckRequest{
@@ -17,4 +15,10 @@ message CheckRequest{
 
 message CheckResponce{
     string result = 1;
+    FeedBack feedback = 3;
+}
+
+//レスポンス用のデータを格納
+message FeedBack{
+    bytes responseFile = 1;
 }

@@ -1,9 +1,9 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -23,22 +23,54 @@ type server struct {
 	pb.UnimplementedSampleSerciveServer
 }
 
-func (s *server) Check(ctx context.Context, in *pb.CheckRequest) (*pb.CheckResponce, error) {
-	return &pb.CheckResponce{
+func (s *server) Check(in *pb.CheckRequest, stream pb.SampleSercive_CheckServer) error {
+
+	fileData := "./server/sample.png"
+	//Responceを返す
+	file, err := os.Open(fileData)
+	if err != nil {
+		fmt.Println("Cant FileOpen :" + err.Error())
+		return err
+	}
+	defer file.Close()
+
+	stream.Send(&pb.CheckResponce{
 		Result: in.GetRequest(),
-	}, nil
+	})
+
+	for {
+		convertFileToBinary, err := convertFileToBinary(file)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			fmt.Println("failed upload file: " + err.Error())
+			return err
+		}
+
+		stream.Send(&pb.CheckResponce{
+			Feedback: &pb.FeedBack{
+				ResponseFile: convertFileToBinary,
+			},
+		})
+	}
+
+	file.Close()
+
+	return nil
 }
 
-func (s *server) Checktwo(ctx context.Context, in *pb.CheckRequest) (*pb.CheckResponce, error) {
-	return &pb.CheckResponce{
-		Result: in.GetRequest(),
-	}, nil
-}
+func convertFileToBinary(file *os.File) (fileBinary []byte, err error) {
+	uploadFileBinary := make([]byte, 1024)
+	count, err := file.Read(uploadFileBinary)
 
-func (s *server) Checkthree(ctx context.Context, in *pb.CheckRequest) (*pb.CheckResponce, error) {
-	return &pb.CheckResponce{
-		Result: in.GetRequest(),
-	}, nil
+	log.Printf("file successfully loaded", count)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return uploadFileBinary, nil
 }
 
 func main() {
