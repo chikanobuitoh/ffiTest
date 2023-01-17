@@ -47,7 +47,8 @@ func ffiCheck(mes *C.char) *C.char {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
-	r, err := c.Check(ctx, &pb.CheckRequest{Request: "gRPC Check"})
+	req := "gRPC Check"
+	r, err := c.Check(ctx, &pb.CheckRequest{Request: req})
 	if err != nil {
 		log.Fatalf("Check Fail: %v", err)
 	}
