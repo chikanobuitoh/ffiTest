@@ -28,8 +28,8 @@ const result = filedirPlatform();
 console.log("libPath  > " + result)
 
 var ffilib = ffi.Library(result ,{
-    "ffiCheck" : [ref.types.CString,["string"]],
+    "get" : [ref.types.CString,["string"]],
   });
 
-let mesResult = ffilib.ffiCheck("hello");
+let mesResult = ffilib.get("hello");
 console.log("calldata Message > " + mesResult);

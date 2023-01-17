@@ -23,8 +23,8 @@ var (
 	addr = flag.String("addr", "localhost:50051", "the address to connect to")
 )
 
-//export ffiCheck
-func ffiCheck(mes *C.char) *C.char {
+//export get
+func get(mes *C.char) *C.char {
 	tex := C.GoString(mes)
 
 	hostaddr, err := readJsonFile("Sample.ini", "host")
