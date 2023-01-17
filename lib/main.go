@@ -33,7 +33,7 @@ func ffiCheck(mes *C.char) *C.char {
 	defer conn.Close()
 	c := pb.NewSampleSerciveClient(conn)
 	// Contact the server and print out its response.
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 
 	r, err := c.Check(ctx, &pb.CheckRequest{Request: "gRPC Check"})
