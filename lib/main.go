@@ -11,8 +11,10 @@ import (
 )
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"time"
 )
@@ -24,6 +26,15 @@ var (
 //export ffiCheck
 func ffiCheck(mes *C.char) *C.char {
 	tex := C.GoString(mes)
+
+	hostaddr, err := readJsonFile("Sample.ini", "host")
+	//errの時はファイルが無い時なのでlocalhostにつなぎます
+	if err == nil {
+		fmt.Println("connect to :" + hostaddr)
+		addr = &hostaddr
+	} else {
+		fmt.Println("missing is Sample.ini :+ " + err.Error())
+	}
 
 	// Set up a connection to the server.
 	conn, err := grpc.Dial(*addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -81,4 +92,21 @@ func ffiCheck(mes *C.char) *C.char {
 }
 
 func main() {
+}
+
+func readJsonFile(path string, readname string) (string, error) {
+
+	raw, err := ioutil.ReadFile(path)
+	if err != nil {
+		fmt.Println(err.Error())
+		return "", err
+	}
+
+	var Data interface{}
+	if err := json.Unmarshal([]byte(raw), &Data); err != nil {
+		return "", err
+	}
+
+	outPut := Data.(map[string]interface{})[readname].(string)
+	return outPut, nil
 }
